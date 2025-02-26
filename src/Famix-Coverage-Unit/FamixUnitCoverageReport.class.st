@@ -21,21 +21,25 @@ FamixUnitCoverageReport >> coverageData: aDictionary [
 	coverageData := aDictionary
 ]
 
-{ #category : 'accessing' }
-FamixUnitCoverageReport >> coverageDataFor: aFamixClass add: probes [
+{ #category : 'metrics' }
+FamixUnitCoverageReport >> coveredCount [
 
-	self coverageData
-		at: aFamixClass
-		ifPresent: [ :data | self merge: data with: probes ]
-		ifAbsentPut: probes
+	^ coverageData sum: [ :data | data coveredCount ]
 ]
 
-{ #category : 'lattice' }
-FamixUnitCoverageReport >> merge: probes with: newProbes [
+{ #category : 'metrics' }
+FamixUnitCoverageReport >> coveredRatio [
 
-	self assert: probes size = newProbes size.
-	1 to: probes size do: [ :i |
-		probes at: i put: ((probes at: i) and: [ newProbes at: i ]) ]
+	^ (coverageData sum: [ :data | data coveredRatio ]) asFloat
+]
+
+{ #category : 'adding' }
+FamixUnitCoverageReport >> forClass: aClassName mergeCoverage: data [
+
+	self coverageData
+		at: aClassName
+		ifPresent: [ :existing | existing mergeWith: data ]
+		ifAbsentPut: data
 ]
 
 { #category : 'accessing' }
