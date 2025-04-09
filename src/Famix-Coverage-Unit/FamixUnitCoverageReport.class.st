@@ -23,6 +23,7 @@ FamixUnitCoverageReport >> coverageData: aDictionary [
 
 { #category : 'metrics' }
 FamixUnitCoverageReport >> coveredCount [
+	"Total number of covered probes"
 
 	^ coverageData sum: [ :data | data coveredCount ]
 ]
@@ -30,14 +31,19 @@ FamixUnitCoverageReport >> coveredCount [
 { #category : 'metrics' }
 FamixUnitCoverageReport >> coveredRatio [
 
-	^ (coverageData sum: [ :data | data coveredRatio ]) asFloat
+	| numerator denominator |
+	numerator := denominator := 0.
+	coverageData do: [ :data |
+		numerator := numerator + data coveredCount.
+		denominator := denominator + data probeCount ].
+	^ (Fraction numerator: numerator denominator: denominator) reduced
 ]
 
 { #category : 'adding' }
-FamixUnitCoverageReport >> forClass: aClassName mergeCoverage: data [
+FamixUnitCoverageReport >> mergeCoverage: data of: className [
 
 	self coverageData
-		at: aClassName
+		at: className
 		ifPresent: [ :existing | existing mergeWith: data ]
 		ifAbsentPut: data
 ]
@@ -52,4 +58,11 @@ FamixUnitCoverageReport >> rootMethod [
 FamixUnitCoverageReport >> rootMethod: aFamixTMethod [
 
 	rootMethod := aFamixTMethod
+]
+
+{ #category : 'accessing' }
+FamixUnitCoverageReport >> totalCount [
+	"Total number of probes to cover"
+
+	^ coverageData sum: [ :data | data probeCount ]
 ]

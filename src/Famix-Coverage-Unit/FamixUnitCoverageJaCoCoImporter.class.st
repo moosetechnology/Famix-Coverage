@@ -52,7 +52,7 @@ FamixUnitCoverageJaCoCoImporter >> importCoverage: coverage ofMethod: aFamixMeth
 { #category : 'initialization' }
 FamixUnitCoverageJaCoCoImporter >> initialize [
 
-	skipUnknownClasses := false
+	skipUnknownClasses := true
 ]
 
 { #category : 'initialization' }
@@ -119,7 +119,7 @@ FamixUnitCoverageJaCoCoImporter >> readDateAndTime [
 { #category : 'private - decoding' }
 FamixUnitCoverageJaCoCoImporter >> readExecutionData [
 
-	| className coveredClass probeCount probes |
+	| className coveredClass probeCount |
 	readStream skip: 8. "skip id (uint64)"
 	className := self readUTF copyReplaceAll: '/' with: '.'.
 	probeCount := self readProbeCount.
@@ -128,15 +128,17 @@ FamixUnitCoverageJaCoCoImporter >> readExecutionData [
 		readStream skip: probeCount - 1 // 8 + 1.
 		^ self ].
 
-	probes := self readProbes: probeCount.
 	coveredClass := entityFinder findTypeNamed: className.
+	(skipUnknownClasses and: [ coveredClass isNil ]) ifTrue: [
+		readStream skip: probeCount - 1 // 8 + 1.
+		^ self ].
 
-	(skipUnknownClasses and: [ coveredClass isNil ]) ifTrue: [ ^ self ].
-
-	self report forClass: className mergeCoverage: (FamixUnitCoverageData
-			 probes: probes
-			 count: probeCount
-			 for: coveredClass)
+	self report
+		mergeCoverage: (FamixUnitCoverageData
+				 probes: (self readProbes: probeCount)
+				 count: probeCount
+				 for: coveredClass)
+		of: className
 ]
 
 { #category : 'private - decoding' }
