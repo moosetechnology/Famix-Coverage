@@ -20,6 +20,20 @@ FamixUnitCoverageData class >> probes: probes count: probeCount for: class [
 ]
 
 { #category : 'accessing' }
+FamixUnitCoverageData >> addProbe: aBoolean [
+
+	| byteIndex |
+	byteIndex := probeCount // 8 + 1.
+	probeCount := probeCount + 1.
+
+	byteIndex > probes size
+		ifTrue: [ probes := probes copyWith: aBoolean asInteger ]
+		ifFalse: [ self probeAt: probeCount put: aBoolean ].
+
+	^ aBoolean
+]
+
+{ #category : 'accessing' }
 FamixUnitCoverageData >> coveredClass [
 
 	^ coveredClass
@@ -80,15 +94,16 @@ FamixUnitCoverageData >> probeAt: index [
 { #category : 'accessing' }
 FamixUnitCoverageData >> probeAt: index put: aBoolean [
 
-	| byteIndex bitIndex |
+	| byteIndex bitIndex byte mask |
 	(index between: 1 and: probeCount) ifFalse: [
 		self errorSubscriptBounds: index ].
-	byteIndex := index // 8 + 1.
-	bitIndex := index \\ 8.
+	byteIndex := index - 1 // 8 + 1. "1-based byte index"
+	bitIndex := index - 1 \\ 8. "0-based bit index"
+	byte := probes at: byteIndex.
+	mask := 1 bitShift: bitIndex.
 	probes at: byteIndex put: (aBoolean
-			 ifTrue: [ (probes at: byteIndex) bitOr: (1 bitShift: bitIndex) ]
-			 ifFalse: [
-			 	(probes at: byteIndex) bitAnd: (16rFE bitShift: bitIndex) ]).
+			 ifTrue: [ byte bitOr: mask ]
+			 ifFalse: [ byte bitClear: mask ]).
 	^ aBoolean
 ]
 
