@@ -1,13 +1,6 @@
 Class {
 	#name : 'FamixUnitCoverageJaCoCoImporter',
-	#superclass : 'Object',
-	#instVars : [
-		'report',
-		'entityFinder',
-		'readStream',
-		'whiteList',
-		'skipUnknownClasses'
-	],
+	#superclass : 'FamixUnitCoverageImporter',
 	#category : 'Famix-Coverage-Unit',
 	#package : 'Famix-Coverage-Unit'
 }
@@ -17,48 +10,6 @@ FamixUnitCoverageJaCoCoImporter >> canReadFormatVersion: aByte [
 	"From JaCoCo 0.8.12"
 
 	^ aByte = 16r1007
-]
-
-{ #category : 'accessing' }
-FamixUnitCoverageJaCoCoImporter >> entityFinder [
-
-	^ entityFinder
-]
-
-{ #category : 'accessing' }
-FamixUnitCoverageJaCoCoImporter >> entityFinder: anEntityFinder [
-
-	entityFinder := anEntityFinder
-]
-
-{ #category : 'importing' }
-FamixUnitCoverageJaCoCoImporter >> importCoverage: coverage ofMethod: aFamixMethod [
-
-	self initializeNewReport.
-	self report rootMethod: aFamixMethod.
-
-	readStream := coverage readStream.
-	self readCoverage.
-	readStream := nil.
-
-	aFamixMethod
-		cacheAt: #unitCoverageReport
-		ifPresent: [ :reports | reports add: self report ]
-		ifAbsentPut: [ OrderedCollection with: self report ].
-
-	^ self report
-]
-
-{ #category : 'initialization' }
-FamixUnitCoverageJaCoCoImporter >> initialize [
-
-	skipUnknownClasses := true
-]
-
-{ #category : 'initialization' }
-FamixUnitCoverageJaCoCoImporter >> initializeNewReport [
-
-	report := FamixUnitCoverageReport new
 ]
 
 { #category : 'testing' }
@@ -85,7 +36,7 @@ FamixUnitCoverageJaCoCoImporter >> isSessionInfoBlock: aByte [
 	^ aByte = 16r10
 ]
 
-{ #category : 'private - decoding' }
+{ #category : 'reading' }
 FamixUnitCoverageJaCoCoImporter >> readBlock: type [
 
 	(self isBlockHeader: type) ifTrue: [ ^ self readHeader ].
@@ -94,7 +45,7 @@ FamixUnitCoverageJaCoCoImporter >> readBlock: type [
 	self error: 'Unknown block type'
 ]
 
-{ #category : 'private - decoding' }
+{ #category : 'reading' }
 FamixUnitCoverageJaCoCoImporter >> readCoverage [
 
 	| firstBlock |
@@ -109,14 +60,14 @@ FamixUnitCoverageJaCoCoImporter >> readCoverage [
 	readStream atEnd ] whileFalse
 ]
 
-{ #category : 'private - decoding' }
+{ #category : 'reading' }
 FamixUnitCoverageJaCoCoImporter >> readDateAndTime [
 	"Read uint64 representing the date as an offset to the Unix epoch in ms"
 
 	^ DateAndTime unixEpoch + self readLong milliSeconds
 ]
 
-{ #category : 'private - decoding' }
+{ #category : 'reading' }
 FamixUnitCoverageJaCoCoImporter >> readExecutionData [
 
 	| className coveredClass probeCount |
@@ -141,7 +92,7 @@ FamixUnitCoverageJaCoCoImporter >> readExecutionData [
 		of: className
 ]
 
-{ #category : 'private - decoding' }
+{ #category : 'reading' }
 FamixUnitCoverageJaCoCoImporter >> readHeader [
 
 	(self isMagicNumber: readStream uint16) ifFalse: [
@@ -150,13 +101,13 @@ FamixUnitCoverageJaCoCoImporter >> readHeader [
 		self error: 'Incompatible format version' ]
 ]
 
-{ #category : 'private - decoding' }
+{ #category : 'reading' }
 FamixUnitCoverageJaCoCoImporter >> readLong [
 
 	^ (readStream uint32 bitShift: 32) + readStream uint32
 ]
 
-{ #category : 'private - decoding' }
+{ #category : 'reading' }
 FamixUnitCoverageJaCoCoImporter >> readProbeCount [
 	"Encoded as a variable-length integer"
 
@@ -166,7 +117,7 @@ FamixUnitCoverageJaCoCoImporter >> readProbeCount [
 	^ (probeCount bitAnd: 16r7F) bitOr: (self readProbeCount bitShift: 7)
 ]
 
-{ #category : 'private - decoding' }
+{ #category : 'reading' }
 FamixUnitCoverageJaCoCoImporter >> readProbes: count [
 	"Extract the bytes directly, the probes are stored as a bitset"
 
@@ -185,7 +136,7 @@ FamixUnitCoverageJaCoCoImporter >> readProbes: count [
 		  ifFalse: [ readStream next: count - 1 // 8 + 1 ]
 ]
 
-{ #category : 'private - decoding' }
+{ #category : 'reading' }
 FamixUnitCoverageJaCoCoImporter >> readSessionInfo [
 	"This is how we would read it if we actually cared.
 	self report
@@ -196,7 +147,7 @@ FamixUnitCoverageJaCoCoImporter >> readSessionInfo [
 	readStream skip: readStream uint16 + 16
 ]
 
-{ #category : 'private - decoding' }
+{ #category : 'reading' }
 FamixUnitCoverageJaCoCoImporter >> readUTF [
 	"Read an UTF8 string, its size is encoded in the first two bytes"
 
@@ -209,47 +160,4 @@ FamixUnitCoverageJaCoCoImporter >> readUTF [
 		count: size
 		fromStream: readStream.
 	^ buffer
-]
-
-{ #category : 'accessing' }
-FamixUnitCoverageJaCoCoImporter >> report [
-
-	^ report ifNil: [ self initializeNewReport ]
-]
-
-{ #category : 'accessing' }
-FamixUnitCoverageJaCoCoImporter >> report: aFamixUnitCoverageReport [
-
-	report := aFamixUnitCoverageReport
-]
-
-{ #category : 'asserting' }
-FamixUnitCoverageJaCoCoImporter >> shouldInclude: className [
-
-	^ self whiteList ifEmpty: [ true ] ifNotEmpty: [ :list |
-		  list anySatisfy: [ :pattern | className matchesRegex: pattern ] ]
-]
-
-{ #category : 'accessing' }
-FamixUnitCoverageJaCoCoImporter >> skipUnknownClasses [
-
-	^ skipUnknownClasses
-]
-
-{ #category : 'accessing' }
-FamixUnitCoverageJaCoCoImporter >> skipUnknownClasses: aBoolean [
-
-	skipUnknownClasses := aBoolean
-]
-
-{ #category : 'accessing' }
-FamixUnitCoverageJaCoCoImporter >> whiteList [
-
-	^ whiteList ifNil: [ whiteList := #(  ) ]
-]
-
-{ #category : 'accessing' }
-FamixUnitCoverageJaCoCoImporter >> whiteList: aStringCollection [
-
-	whiteList := aStringCollection
 ]
