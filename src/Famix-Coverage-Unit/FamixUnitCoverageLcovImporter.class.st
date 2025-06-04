@@ -1,4 +1,6 @@
 "
+Importer for [lcov](https://github.com/linux-test-project/lcov) coverage data.
+This format is available with [smalltalkCI](https://github.com/hpi-swa/smalltalkCI).
 Lcov has the following format:
 ```text
 TN    Test Name              string that can be empty
@@ -11,10 +13,13 @@ BRF   BRanches Found         number
 FN    Function Name          line number, name string
 FNF   Function Number Found  number
 FNH   Function Number Hit    number
+```
+We really only care about SF, which gives the class, and DA, which gives the probes.
+Everything else is simply ignored.
 "
 Class {
 	#name : 'FamixUnitCoverageLcovImporter',
-	#superclass : 'FamixUnitCoverageImporter',
+	#superclass : 'FamixUnitCoverageAbstractImporter',
 	#instVars : [
 		'currentType',
 		'currentData'

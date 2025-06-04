@@ -1,6 +1,9 @@
+"
+I import coverage data from [JaCoCo](https://github.com/jacoco/jacoco)'s `.exec` files.
+"
 Class {
 	#name : 'FamixUnitCoverageJaCoCoImporter',
-	#superclass : 'FamixUnitCoverageImporter',
+	#superclass : 'FamixUnitCoverageAbstractImporter',
 	#category : 'Famix-Coverage-Unit',
 	#package : 'Famix-Coverage-Unit'
 }
