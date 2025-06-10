@@ -79,10 +79,7 @@ FamixUnitCoverageAbstractImporter >> readCoverage [
 { #category : 'importing' }
 FamixUnitCoverageAbstractImporter >> readCoverageFrom: coverage [
 
-	readStream := coverage isCollection
-		              ifTrue: [ "Assuming ByteArray" coverage readStream ]
-		              ifFalse: [ "Assuming FileReference"
-		              coverage binaryReadStream ].
+	readStream := coverage readStream.
 	[ self readCoverage ] ensure: [
 		readStream close.
 		readStream := nil ]

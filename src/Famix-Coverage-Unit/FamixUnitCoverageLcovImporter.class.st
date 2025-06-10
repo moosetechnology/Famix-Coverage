@@ -92,7 +92,7 @@ FamixUnitCoverageLcovImporter >> readLine [
 
 	| hint |
 	hint := readStream next. "First token"
-	hint = Character cr ifTrue: [ "Empty line" ^ self ].
+	hint isSeparator ifTrue: [ "Empty line" ^ self ].
 	hint = $e ifTrue: [ ^ self readEndOfRecord ].
 	hint = $T ifTrue: [
 		readStream skip: 2.
