@@ -8,8 +8,11 @@ Class {
 	#name : 'FamixUnitCoverageReport',
 	#superclass : 'Object',
 	#instVars : [
+		'identifier',
 		'rootMethod',
-		'coverageData'
+		'coverageData',
+		'startTime',
+		'dumpTime'
 	],
 	#category : 'Famix-Coverage-Unit',
 	#package : 'Famix-Coverage-Unit'
@@ -111,11 +114,4 @@ FamixUnitCoverageReport >> rootMethod [
 FamixUnitCoverageReport >> rootMethod: aFamixTMethod [
 
 	rootMethod := aFamixTMethod
-]
-
-{ #category : 'accessing' }
-FamixUnitCoverageReport >> totalCount [
-	"Total number of probes to cover"
-
-	^ coverageData sum: [ :data | data probeCount ]
 ]
