@@ -10,7 +10,8 @@ Class {
 
 { #category : 'testing' }
 FamixUnitCoverageJaCoCoImporter >> canReadFormatVersion: aByte [
-	"From JaCoCo 0.8.12"
+	"Compatible from JaCoCo v0.7.5 to v0.8.14 (latest as of this writing)
+	If using later, verify ExecutionDataWriter.FORMAT_VERSION matches"
 
 	^ aByte = 16r1007
 ]
@@ -123,16 +124,6 @@ FamixUnitCoverageJaCoCoImporter >> readProbeCount [
 { #category : 'reading' }
 FamixUnitCoverageJaCoCoImporter >> readProbes: count [
 	"Extract the bytes directly, the probes are stored as a bitset"
-
-	"Implementation if we wanted a boolean array:
-	| probes buffer |
-	probes := Array new: count.
-	buffer := 0.
-	0 to: count - 1 do: [ :i |
-		i \\ 8 = 0 ifTrue: [ buffer := readStream next ].
-		probes at: i + 1 put: (buffer bitAnd: 1) = 1.
-		buffer := buffer bitShift: -1 ].
-	^ probes"
 
 	^ count = 0
 		  ifTrue: [ #[  ] ]
