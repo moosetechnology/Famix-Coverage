@@ -10,8 +10,17 @@ BaselineOfFamixCoverage >> baseline: spec [
 
 	<baseline>
 	spec for: #common do: [
+		self dependencies: spec.
 		self packages: spec.
 		self groups: spec ]
+]
+
+{ #category : 'accessing' }
+BaselineOfFamixCoverage >> dependencies: spec [
+
+	spec baseline: 'FamixEntityFinder' with: [
+		spec repository:
+			'github://moosetechnology/Famix-EntityFinder:main/src' ]
 ]
 
 { #category : 'baselines' }
@@ -22,7 +31,8 @@ BaselineOfFamixCoverage >> groups: spec [
 		group: 'model'
 		with: #( 'Famix-Coverage-Entities' 'Famix-Coverage-Generator' );
 		group: 'unit'
-		with: #( 'Famix-Coverage-Unit' 'Famix-Coverage-Unit-Tests' )
+		with: #( 'Famix-Coverage-Unit' 'Famix-Coverage-Unit-Tests'
+			   'FamixEntityFinder' )
 ]
 
 { #category : 'accessing' }
