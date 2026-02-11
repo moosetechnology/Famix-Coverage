@@ -88,6 +88,8 @@ FamixUnitCoverageData >> coveredRatio [
 
 { #category : 'operations' }
 FamixUnitCoverageData >> mergeWith: data [
+	"Merge coverage data of the same target,
+	thus the invariant: self probes size = data probes size"
 
 	1 to: probes size do: [ :i |
 		probes at: i put: ((probes at: i) bitOr: (data probes at: i)) ]

@@ -105,6 +105,74 @@ FamixUnitCoverageDataTest >> testAddProbeTrue [
 ]
 
 { #category : 'tests' }
+FamixUnitCoverageDataTest >> testCoverageEquals [
+
+	| other |
+	data probes: #[ 42 66 7 ].
+	data probeCount: 24.
+
+	other := FamixUnitCoverageData new.
+	other probes: #[ 42 66 7 ].
+	other probeCount: 24.
+
+	self assert: (data coverageEquals: other)
+]
+
+{ #category : 'tests' }
+FamixUnitCoverageDataTest >> testCoverageEqualsNotInCount [
+
+	| other |
+	data probes: #[ 42 66 7 ].
+	data probeCount: 24.
+
+	other := FamixUnitCoverageData new.
+	other probes: #[ 42 66 7 ].
+	other probeCount: 23.
+
+	self deny: (data coverageEquals: other)
+]
+
+{ #category : 'tests' }
+FamixUnitCoverageDataTest >> testCoverageEqualsNotInProbes [
+
+	| other |
+	data probes: #[ 42 66 7 ].
+	data probeCount: 24.
+
+	other := FamixUnitCoverageData new.
+	other probes: #[ 42 66 15 ].
+	other probeCount: 24.
+
+	self deny: (data coverageEquals: other)
+]
+
+{ #category : 'tests' }
+FamixUnitCoverageDataTest >> testCoveredCount [
+
+	data probes: #[ 0 0 0 0 ].
+	self assert: data coveredCount equals: 0.
+
+	data probes: #[ 2r01011010 ].
+	self assert: data coveredCount equals: 4.
+
+	data probes: #[ 16rFF 16r0F 16rE0 1 ].
+	self assert: data coveredCount equals: 16
+]
+
+{ #category : 'tests' }
+FamixUnitCoverageDataTest >> testMergeWith [
+
+	| other |
+	other := FamixUnitCoverageData new.
+	other probes: #[ 16r0F 2r1001 ].
+	data probes: (ByteArray with: 16rF0 with: 2r1100).
+
+	data mergeWith: other.
+
+	self assert: data probes equals: #[ 16rFF 2r1101 ]
+]
+
+{ #category : 'tests' }
 FamixUnitCoverageDataTest >> testProbeAt [
 
 	data probes: #[ 1 ].
@@ -177,7 +245,7 @@ FamixUnitCoverageDataTest >> testProbeAtPutFirstBitInByte [
 	data probes: (ByteArray with: 0).
 	data probeCount: 8.
 
-	data probeAt: 1 put: true. "Last bit"
+	data probeAt: 1 put: true.
 
 	self assertOnlyProbeSet: 1
 ]
