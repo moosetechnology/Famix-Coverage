@@ -1,0 +1,15 @@
+SmalltalkCISpec {
+  #loading : [
+    SCIMetacelloLoadSpec {
+      #baseline : 'FamixCoverage',
+      #directory : 'src',
+      #platforms : [ #pharo ]
+    }
+  ],
+  #testing : {
+    #coverage : {
+      #packages : [ 'Famix-Coverage-Unit' ],
+      #format : #lcov
+    }
+  }
+}
