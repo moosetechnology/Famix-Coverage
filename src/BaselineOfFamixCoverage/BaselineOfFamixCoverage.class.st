@@ -21,7 +21,8 @@ BaselineOfFamixCoverage >> groups: spec [
 		group: 'default' with: #( 'model' 'unit' );
 		group: 'model'
 		with: #( 'Famix-Coverage-Entities' 'Famix-Coverage-Generator' );
-		group: 'unit' with: #( 'Famix-Coverage-Unit' )
+		group: 'unit'
+		with: #( 'Famix-Coverage-Unit' 'Famix-Coverage-Unit-Tests' )
 ]
 
 { #category : 'accessing' }
@@ -30,5 +31,6 @@ BaselineOfFamixCoverage >> packages: spec [
 	spec
 		package: 'Famix-Coverage-Entities';
 		package: 'Famix-Coverage-Generator';
-		package: 'Famix-Coverage-Unit'
+		package: 'Famix-Coverage-Unit';
+		package: 'Famix-Coverage-Unit-Tests'
 ]

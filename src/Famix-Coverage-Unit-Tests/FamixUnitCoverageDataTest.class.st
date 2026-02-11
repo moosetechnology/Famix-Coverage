@@ -119,7 +119,7 @@ FamixUnitCoverageDataTest >> testProbeAtAcrossBytes [
 	data probes: #[ 0 1 ].
 	data probeCount: 9.
 
-	self assert: (data probeAt: 9) equals: true
+	self assert: (data probeAt: 9)
 ]
 
 { #category : 'tests' }
